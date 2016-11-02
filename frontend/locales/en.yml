@@ -1,8 +1,8 @@
 en:
   plugins:
     browse_pages:
-      label: Export Browse Pages
+      label: Update Browse Pages
       actions:
-        export: Export
+        update: Update
       messages:
-        exporting_records: Exporting browse page info
+        updating_records: Update browse page info
