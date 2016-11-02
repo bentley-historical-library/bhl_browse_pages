@@ -42,5 +42,7 @@ class ArchivesSpaceService < Sinatra::Base
 		BrowsePages.create_browse_table(browse_pages_db)
 		browse_pages_db[:browse_pages].multi_insert(rows)
 		browse_pages_db.disconnect
+
+		json_response(:updates => "Updated #{rows.length} rows")
 	end
 end
