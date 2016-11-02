@@ -7,8 +7,8 @@
       
       <%= form_tag({:controller => :browse_pages, :action => :update}, {:id => "browse_pages", :class => "form-search", :method => "POST"}) do |form| %>
       <div class='form-group'>
-        <button type="submit" class="btn btn-primary" id="submit" name="export" data-loading-text="<%= I18n.t('plugins.browse_pages.messages.exporting_records') %>">
-        <%= I18n.t("plugins.browse_pages.actions.export") %>
+        <button type="submit" class="btn btn-primary" id="submit" name="update" data-loading-text="<%= I18n.t('plugins.browse_pages.messages.updating_records') %>">
+        <%= I18n.t("plugins.browse_pages.actions.update") %>
 	</button>
       </div>
       <% end %>
