@@ -1,0 +1,17 @@
+<%= setup_context(:title => I18n.t("plugins.browse_pages.label"), :controller => :browse_pages) %>
+
+<div class="record-pane">
+  <div class="row">
+    <div class="col-sm-12">
+      <h2><%= I18n.t("plugins.browse_pages.label") %></h2>
+      
+      <%= form_tag({:controller => :browse_pages, :action => :import}, {:id => "browse_pages", :class => "form-search", :method => "POST"}) do |form| %>
+      <div class='form-group'>
+        <button type="submit" class="btn btn-primary" id="submit" name="export" data-loading-text="<%= I18n.t('plugins.browse_pages.messages.exporting_records') %>">
+        <%= I18n.t("plugins.browse_pages.actions.export") %>
+	</button>
+      </div>
+      <% end %>
+    </div>
+  </div>
+</div>

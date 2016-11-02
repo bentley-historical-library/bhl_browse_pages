@@ -1,0 +1,8 @@
+en:
+  plugins:
+    browse_pages:
+      label: Export Browse Pages
+      actions:
+        export: Export
+      messages:
+        exporting_records: Exporting browse page info
