@@ -8,6 +8,47 @@ class BrowsePages
 	def initialize
 	end
 
+	def self.update_browse_pages
+		colls = CrudHelpers.scoped_dataset(Resource, {:publish => true})
+		rows = Array.new
+		colls.each do |coll|
+			json = Resource.to_jsonmodel(coll[:id])
+
+			last_revision = last_revision(json[:revision_statements])
+			revision_count = json[:revision_statements].length
+			new_or_updated = new_or_updated(last_revision, revision_count)
+			creator = creator(json[:linked_agents])
+			classification = classification(json[:classifications])
+			sort = sort(creator, coll[:title])
+			page = page(sort)
+			display = display(creator, coll[:title])
+
+			row = {
+				:id => coll[:id],
+				:ead_id => coll[:ead_id],
+				:display => display,
+				:sort => sort,
+				:page => page,
+				:classification => classification,
+				:status => new_or_updated,
+				:title => coll[:title],
+				:revision_count => revision_count,
+				:last_revision => last_revision,
+				:creator => creator
+			}
+
+			rows.push(row)
+		end
+
+		@browse_pages_db = Sequel.connect(AppConfig[:browse_page_db_url])
+		drop_browse_table
+		create_browse_table
+		@browse_pages_db[:browse_pages].multi_insert(rows)
+		@browse_pages_db.disconnect
+
+		rows.length
+	end
+
 	def self.creator(agents)
 		creator_name = nil
 		creators = agents.map { |a| a if a["role"] == "creator"}.compact
@@ -132,17 +173,12 @@ class BrowsePages
 		page
 	end
 
-	def self.connect_to_browse_page_db
-		browse_pages_db = Sequel.connect(AppConfig[:browse_page_db_url])
-		browse_pages_db
+	def self.drop_browse_table
+		@browse_pages_db.drop_table?(:browse_pages)
 	end
 
-	def self.drop_browse_table(browse_pages_db)
-		browse_pages_db.drop_table?(:browse_pages)
-	end
-
-	def self.create_browse_table(browse_pages_db)
-		browse_pages_db.create_table :browse_pages do 
+	def self.create_browse_table
+		@browse_pages_db.create_table :browse_pages do 
 			primary_key :id
 			String :ead_id
 			String :display

@@ -1,18 +1,17 @@
 class BrowsePagesController < ApplicationController
-  set_access_control "view_repository" => [:index, :update]
+  set_access_control "manage_repository" => [ :index, :update]
 
   def index
-	render "browse_pages/index"
+	@job = JSONModel(:job).new._always_valid!
   end
 
   def update
-  	response = JSONModel::HTTP::post_form("/repositories/#{session[:repo_id]}/browse_pages")
-
-    if response.code == '200'
-      render :json => ASUtils.json_parse(response.body)
-    else
-      render :status => 500
-    end
+    job_data ||= {}
+    job_data['repo_id'] ||= session[:repo_id]
+    job = Job.new("update_browse_pages_job", JSONModel(:update_browse_pages_job).from_hash(job_data), [])
+    response = job.upload
+    resolver = Resolver.new(response[:uri])
+    redirect_to resolver.view_uri
   end	
 
 end
