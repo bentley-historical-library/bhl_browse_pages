@@ -1,3 +1,30 @@
+<%= setup_context :title => "Update Browse Pages" %>
+
+<div class="row">
+
+    <%= render_aspace_partial :partial => "shared/flash_messages" %>
+
+    <%= form_for @job, :as => "job", :url => {:action => :update}, :html => {:id => "jobfileupload", :class => 'form-horizontal aspace-record-form',  :multipart => true} do |form| %>
+       <%= form_context :job, @job do |form| %> 
+          <div class="record-pane">
+            <%= link_to_help :topic => "job" %>
+            <h2><%= I18n.t("job._frontend.actions.new") %></h2>
+
+            <%= render_aspace_partial :partial => "shared/form_messages", :locals => {:object => @job, :form => form} %>
+            <input id="job_jsonmodel_type_" name="update_browse_pages_job[jsonmodel_type]" type="hidden" value="update_browse_pages_job">
+            <div class="form-actions">
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary"><%= I18n.t("job._frontend.actions.save") %></button>
+              </div>
+              <%= link_to I18n.t("actions.cancel"), :back, :class => "btn btn-cancel btn-default" %>
+            </div>
+          </div>
+    <% end %> 
+  <% end %> 
+
+</div>
+
+<!--
 <%= setup_context(:title => I18n.t("plugins.browse_pages.label"), :controller => :browse_pages) %>
 
 <div class="record-pane">
@@ -15,3 +42,4 @@
     </div>
   </div>
 </div>
+-->
