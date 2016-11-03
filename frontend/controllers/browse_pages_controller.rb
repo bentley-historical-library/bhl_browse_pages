@@ -2,7 +2,7 @@ class BrowsePagesController < ApplicationController
   set_access_control "manage_repository" => [ :index, :update]
 
   def index
-	@job = JSONModel(:job).new._always_valid!
+  @job = JSONModel(:job).new._always_valid!
   end
 
   def update
@@ -12,6 +12,6 @@ class BrowsePagesController < ApplicationController
     response = job.upload
     resolver = Resolver.new(response[:uri])
     redirect_to resolver.view_uri
-  end	
+  end 
 
 end

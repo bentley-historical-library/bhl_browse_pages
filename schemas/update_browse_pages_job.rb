@@ -1,12 +1,12 @@
 {
   :schema => {
-	"$schema" => "http://www.archivesspace.org/archivesspace.json",
-	"version" => 1,
-	"type" => "object",
+    "$schema" => "http://www.archivesspace.org/archivesspace.json",
+    "version" => 1,
+    "type" => "object",
 
-	"properties" => {
+    "properties" => {
 
-	  "update_count" => {"type" => "string", "maxLength" => 255, "minLength" => 1}
-	}
+      "update_count" => {"type" => "string", "maxLength" => 255, "minLength" => 1}
+    }
   }
 }
