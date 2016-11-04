@@ -1,48 +1,47 @@
 <%= setup_context :title => "Update Browse Pages" %>
 
 <div class="row">
+  <div class="col-md-12">
+    <div class="record-pane">
+      <%= render_aspace_partial :partial => "shared/flash_messages" %>
+      <h2>Update Finding Aid Browse Pages</h2>
+      <div>
+        <p>Browse pages last updated on: <%= @new_collections["results"]["last_update"] %></p>
+        <p>Collections to be added to browse pages: <%= @new_collections["results"]["new_colls"].length %></p>
+          <ul>
+            <% if @new_collections["results"]["new_colls"].length %>
+              <% @new_collections["results"]["new_colls"].each do |resource_id, resource_title| %>
+                <li><%= resource_title %></li>
+              <% end %>
+            <% else %>
+              <li>No additions</li>
+            <% end %> 
+          </ul>
+        <p>Collections to be deleted from browse pages: <%= @new_collections["results"]["deleted_colls"].length %></p>
+          <ul>
+            <% if @new_collections["results"]["deleted_colls"].length %>
+              <% @new_collections["results"]["deleted_colls"].each do |resource_id, resource_title| %>
+                <li><%= resource_title %></li>
+              <% end %>
+            <% else %>
+              <li>No deletions</li>
+            <% end %> 
+          </ul>
+        <p>Collections to be updated on browse pages: <%= @new_collections["results"]["updated_colls"].length %></p>
+          <ul>
+            <% if @new_collections["results"]["updated_colls"].length %>
+              <% @new_collections["results"]["updated_colls"].each do |resource_id, resource_title| %>
+                <li><%= resource_title %></li>
+              <% end %>
+            <% else %>
+              <li>No updates</li>
+            <% end %> 
+          </ul>
+      </div>
 
-    <%= render_aspace_partial :partial => "shared/flash_messages" %>
-
-    <%= form_for @job, :as => "job", :url => {:action => :update}, :html => {:id => "jobfileupload", :class => 'form-horizontal aspace-record-form',  :multipart => true} do |form| %>
-       <%= form_context :job, @job do |form| %> 
-          <div class="record-pane">
-            <%= link_to_help :topic => "job" %>
-            <h2>Update Finding Aid Browse Pages</h2>
-            <div>
-              <p>Browse pages last updated on: <%= @new_collections["results"]["last_update"] %></p>
-              <p>Collections to be added to browse pages: <%= @new_collections["results"]["new_colls"].length %></p>
-              <ul>
-                <% if @new_collections["results"]["new_colls"].length %>
-                  <% @new_collections["results"]["new_colls"].each do |resource_id, resource_title| %>
-                    <li><%= resource_title %></li>
-                  <% end %>
-                <% else %>
-                  <li>No additions</li>
-                <% end %> 
-              </ul>
-              <p>Collections to be deleted from browse pages: <%= @new_collections["results"]["deleted_colls"].length %></p>
-              <ul>
-                <% if @new_collections["results"]["deleted_colls"].length %>
-                  <% @new_collections["results"]["deleted_colls"].each do |resource_id, resource_title| %>
-                    <li><%= resource_title %></li>
-                  <% end %>
-                <% else %>
-                  <li>No deletions</li>
-                <% end %> 
-              </ul>
-              <p>Collections to be updated on browse pages: <%= @new_collections["results"]["updated_colls"].length %></p>
-              <ul>
-                <% if @new_collections["results"]["updated_colls"].length %>
-                  <% @new_collections["results"]["updated_colls"].each do |resource_id, resource_title| %>
-                    <li><%= resource_title %></li>
-                  <% end %>
-                <% else %>
-                  <li>No updates</li>
-                <% end %> 
-              </ul>
-            </div>
-            <%= render_aspace_partial :partial => "shared/form_messages", :locals => {:object => @job, :form => form} %>
+      <%= form_for @job, :as => "job", :url => {:action => :update}, :html => {:id => "jobfileupload", :class => 'form-horizontal aspace-record-form',  :multipart => true} do |form| %>
+        <%= form_context :job, @job do |form| %> 
+          <%= render_aspace_partial :partial => "shared/form_messages", :locals => {:object => @job, :form => form} %>
             <input id="job_jsonmodel_type_" name="update_browse_pages_job[jsonmodel_type]" type="hidden" value="update_browse_pages_job">
             <div class="form-actions">
               <div class="btn-group">
@@ -50,7 +49,8 @@
               </div>
               <%= link_to I18n.t("actions.cancel"), :back, :class => "btn btn-cancel btn-default" %>
             </div>
-          </div>
-    <% end %> 
-  <% end %> 
+        <% end %> 
+      <% end %> 
+    </div>
+  </div>
 </div>
