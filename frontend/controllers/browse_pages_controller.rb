@@ -3,6 +3,7 @@ class BrowsePagesController < ApplicationController
 
   def index
   @job = JSONModel(:job).new._always_valid!
+  @new_collections = JSONModel::HTTP::get_json("/repositories/#{session[:repo_id]}/browse_pages/calculate")
   end
 
   def update
