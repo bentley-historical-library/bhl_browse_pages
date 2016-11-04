@@ -5,38 +5,77 @@
     <div class="record-pane">
       <%= render_aspace_partial :partial => "shared/flash_messages" %>
       <h2>Update Finding Aid Browse Pages</h2>
-      <div>
-        <p>Browse pages last updated on: <%= @new_collections["results"]["last_update"] %></p>
-        <p>Collections to be added to browse pages: <%= @new_collections["results"]["new_colls"].length %></p>
-          <ul>
-            <% if @new_collections["results"]["new_colls"].length %>
-              <% @new_collections["results"]["new_colls"].each do |resource_id, resource_title| %>
-                <li><%= resource_title %></li>
-              <% end %>
-            <% else %>
-              <li>No additions</li>
-            <% end %> 
-          </ul>
-        <p>Collections to be deleted from browse pages: <%= @new_collections["results"]["deleted_colls"].length %></p>
-          <ul>
-            <% if @new_collections["results"]["deleted_colls"].length %>
-              <% @new_collections["results"]["deleted_colls"].each do |resource_id, resource_title| %>
-                <li><%= resource_title %></li>
-              <% end %>
-            <% else %>
-              <li>No deletions</li>
-            <% end %> 
-          </ul>
-        <p>Collections to be updated on browse pages: <%= @new_collections["results"]["updated_colls"].length %></p>
-          <ul>
-            <% if @new_collections["results"]["updated_colls"].length %>
-              <% @new_collections["results"]["updated_colls"].each do |resource_id, resource_title| %>
-                <li><%= resource_title %></li>
-              <% end %>
-            <% else %>
-              <li>No updates</li>
-            <% end %> 
-          </ul>
+      <p>Browse pages last updated on: <%= @new_collections["results"]["last_update"] %></p>
+      <div class="accordion details" id="update_browse_pages_accordion">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="row accordion-toggle collapsed" data-toggle="collapse" data-parent="#update_browse_pages_accordion" href="#new_colls">
+              <div class="col-md-1">
+                <span class="glyphicon"></span>
+              </div>
+              <div class="col-md-7">
+                Collections to be added to browse pages: <%= @new_collections["results"]["new_colls"].length %>
+              </div>
+            </div>
+          </div>
+          <div id="new_colls" class="accordion-body collapse">
+            <ul>
+              <% if @new_collections["results"]["new_colls"].length %>
+                <% @new_collections["results"]["new_colls"].each do |resource_id, resource_title| %>
+                  <li><%= resource_title %></li>
+                <% end %>
+              <% else %>
+                <li>No additions</li>
+              <% end %> 
+            </ul>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="row accordion-toggle collapsed" data-toggle="collapse" data-parent="#update_browse_pages_accordion" href="#deleted_colls">
+              <div class="col-md-1">
+                <span class="glyphicon"></span>
+              </div>
+              <div class="col-md-7">
+                Collections to be deleted from browse pages: <%= @new_collections["results"]["deleted_colls"].length %>
+              </div>
+            </div>
+          </div>
+          <div id="deleted_colls" class="accordion-body collapse">
+            <ul>
+              <% if @new_collections["results"]["deleted_colls"].length %>
+                <% @new_collections["results"]["deleted_colls"].each do |resource_id, resource_title| %>
+                  <li><%= resource_title %></li>
+                <% end %>
+              <% else %>
+                <li>No deletions</li>
+              <% end %> 
+            </ul>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="row accordion-toggle collapsed" data-toggle="collapse" data-parent="#update_browse_pages_accordion" href="#updated_colls">
+              <div class="col-md-1">
+                <span class="glyphicon"></span>
+              </div>
+              <div class="col-md-7">
+                Collections to be updated on browse pages: <%= @new_collections["results"]["updated_colls"].length %>
+              </div>
+            </div>
+          </div>
+          <div id="updated_colls" class="accordion-body collapse">
+            <ul>
+              <% if @new_collections["results"]["updated_colls"].length %>
+                <% @new_collections["results"]["updated_colls"].each do |resource_id, resource_title| %>
+                  <li><%= resource_title %></li>
+                <% end %>
+              <% else %>
+                <li>No updated</li>
+              <% end %> 
+            </ul>
+          </div>
+        </div>
       </div>
 
       <%= form_for @job, :as => "job", :url => {:action => :update}, :html => {:id => "jobfileupload", :class => 'form-horizontal aspace-record-form',  :multipart => true} do |form| %>
