@@ -2,36 +2,89 @@
 
 require 'date'
 require 'sequel'
+require 'time'
 
 class BrowsePages
 
   def initialize
   end
 
-  def self.update_browse_pages
-    colls = CrudHelpers.scoped_dataset(Resource, {:publish => true})
+  def self.locate_new_collections
+    update_job_enum = EnumerationValue.filter(:value => "update_browse_pages_job").get(:id)
+    update_jobs = Job.filter(:job_type_id => update_job_enum, :status => "completed")
+    if update_jobs.count > 0
+      last_update = update_jobs.map(:create_time).max
+    else
+      last_update = Time.at(0)
+    end
+
+    browse_pages_db = Sequel.connect(AppConfig[:browse_page_db_url])
+    create_browse_table(browse_pages_db)
+    browse_page_ids_and_titles = browse_pages_db[:browse_pages].to_hash(:id, :title)
+    browse_pages_db.disconnect
+
+    aspace_colls = CrudHelpers.scoped_dataset(Resource, {:publish => true})
+    aspace_colls_ids_and_titles = aspace_colls.to_hash(:id, :title)
+
+    new_colls = aspace_colls_ids_and_titles.reject {|k, v| browse_page_ids_and_titles.include?(k)}
+    deleted_colls = browse_page_ids_and_titles.reject {|k, v| aspace_colls_ids_and_titles.include?(k)}    
+    updated_colls = aspace_colls.where{user_mtime > last_update}.to_hash(:id, :title).reject { |k, v| new_colls.include?(k)}
+
+    {
+      "new_colls" => new_colls, 
+      "updated_colls" => updated_colls, 
+      "deleted_colls" => deleted_colls, 
+      "last_update" => last_update,
+      "last_update_formatted" => last_update.strftime("%B %d, %Y")
+    }
+
+  end
+
+  def self.create_new_entries(colls_to_add)
+    rows = make_rows(colls_to_add)
+    browse_pages_db = Sequel.connect(AppConfig[:browse_page_db_url])
+    browse_pages_db[:browse_pages].multi_insert(rows)
+    browse_pages_db.disconnect
+  end
+
+  def self.update_existing_entries(colls_to_update)
+    rows = make_rows(colls_to_update)
+    browse_pages_db = Sequel.connect(AppConfig[:browse_page_db_url])
+    browse_pages_db[:browse_pages].filter(:id => colls_to_update).delete
+    browse_pages_db[:browse_pages].multi_insert(rows)
+    browse_pages_db.disconnect
+  end
+
+  def self.remove_entries(colls_to_delete)
+    browse_pages_db = Sequel.connect(AppConfig[:browse_page_db_url])
+    browse_pages_db[:browse_pages].filter(:id => colls_to_delete).delete
+    browse_pages_db.disconnect
+
+  end
+
+  def self.make_rows(coll_ids)
     rows = Array.new
-    colls.each do |coll|
-      json = Resource.to_jsonmodel(coll[:id])
+    coll_ids.each do |coll_id|
+      json = Resource.to_jsonmodel(coll_id)
 
       last_revision = last_revision(json[:revision_statements])
       revision_count = json[:revision_statements].length
       new_or_updated = new_or_updated(last_revision, revision_count)
       creator = creator(json[:linked_agents])
       classification = classification(json[:classifications])
-      sort = sort(creator, coll[:title])
+      sort = sort(creator, json[:title])
       page = page(sort)
-      display = display(creator, coll[:title])
+      display = display(creator, json[:title])
 
       row = {
-        :id => coll[:id],
-        :ead_id => coll[:ead_id],
+        :id => coll_id,
+        :ead_id => json[:ead_id],
         :display => display,
         :sort => sort,
         :page => page,
         :classification => classification,
         :status => new_or_updated,
-        :title => coll[:title],
+        :title => json[:title],
         :revision_count => revision_count,
         :last_revision => last_revision,
         :creator => creator
@@ -40,13 +93,7 @@ class BrowsePages
       rows.push(row)
     end
 
-    @browse_pages_db = Sequel.connect(AppConfig[:browse_page_db_url])
-    drop_browse_table
-    create_browse_table
-    @browse_pages_db[:browse_pages].multi_insert(rows)
-    @browse_pages_db.disconnect
-
-    rows.length
+    rows
   end
 
   def self.creator(agents)
@@ -81,7 +128,7 @@ class BrowsePages
       display = title
     end
 
-    display.gsub("’", "'").gsub("&amp;","&").strip
+    display.gsub("’", "'").gsub("&amp;","&").gsub(/<.*?>/,"").strip
   end
 
   def self.last_revision(revisions)
@@ -173,12 +220,8 @@ class BrowsePages
     page
   end
 
-  def self.drop_browse_table
-    @browse_pages_db.drop_table?(:browse_pages)
-  end
-
-  def self.create_browse_table
-    @browse_pages_db.create_table :browse_pages do 
+  def self.create_browse_table(browse_pages_db)
+    browse_pages_db.create_table?(:browse_pages) do 
       primary_key :id
       String :ead_id
       String :display
