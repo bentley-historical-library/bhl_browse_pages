@@ -20,8 +20,9 @@ class BrowsePages
 
     browse_pages_db = Sequel.connect(AppConfig[:browse_page_db_url])
     create_browse_table(browse_pages_db)
-    browse_page_ids_and_titles = browse_pages_db[:browse_pages].to_hash(:id, :title)
-    browse_page_new_page_colls = browse_pages[:browse_pages].filter(:status => "new").or(:status => "updated").to_has(:id, :title)
+    browse_pages_table = browse_pages_db[:browse_pages]
+    browse_page_ids_and_titles = browse_pages_table.to_hash(:id, :title)
+    browse_page_new_page_colls = browse_pages_table.filter(:status => "new").or(:status => "updated").to_has(:id, :title)
     browse_pages_db.disconnect
 
     aspace_colls = CrudHelpers.scoped_dataset(Resource, {:publish => true})
