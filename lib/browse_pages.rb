@@ -21,6 +21,7 @@ class BrowsePages
     browse_pages_db = Sequel.connect(AppConfig[:browse_page_db_url])
     create_browse_table(browse_pages_db)
     browse_page_ids_and_titles = browse_pages_db[:browse_pages].to_hash(:id, :title)
+    browse_page_new_page_colls = browse_pages[:browse_pages].filter(:status => "new").or(:status => "updated").to_has(:id, :title)
     browse_pages_db.disconnect
 
     aspace_colls = CrudHelpers.scoped_dataset(Resource, {:publish => true})
@@ -29,10 +30,12 @@ class BrowsePages
     new_colls = aspace_colls_ids_and_titles.reject {|k, v| browse_page_ids_and_titles.include?(k)}
     deleted_colls = browse_page_ids_and_titles.reject {|k, v| aspace_colls_ids_and_titles.include?(k)}    
     updated_colls = aspace_colls.where{user_mtime > last_update}.to_hash(:id, :title).reject { |k, v| new_colls.include?(k)}
+    updates = browse_page_new_page_colls.merge(updated_colls)
+
 
     {
       "new_colls" => new_colls, 
-      "updated_colls" => updated_colls, 
+      "updated_colls" => updates, 
       "deleted_colls" => deleted_colls, 
       "last_update" => last_update,
       "last_update_formatted" => last_update.strftime("%B %d, %Y")
