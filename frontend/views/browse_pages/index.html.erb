@@ -22,7 +22,7 @@
             <ul>
               <% if !@new_collections["results"]["new_colls"].empty? %>
                 <% @new_collections["results"]["new_colls"].each do |resource_id, resource_title| %>
-                  <li><%= resource_title %></li>
+                  <li><a href="/resources/<%= resource_id %>"><%= resource_title %></a></li>
                 <% end %>
               <% else %>
                 <li>No additions</li>
@@ -45,7 +45,7 @@
             <ul>
               <% if !@new_collections["results"]["deleted_colls"].empty? %>
                 <% @new_collections["results"]["deleted_colls"].each do |resource_id, resource_title| %>
-                  <li><%= resource_title %></li>
+                  <li><a href="/resources/<%= resource_id %>"><%= resource_title %></a></li>
                 <% end %>
               <% else %>
                 <li>No deletions</li>
@@ -68,7 +68,7 @@
             <ul>
               <% if !@new_collections["results"]["updated_colls"].empty? %>
                 <% @new_collections["results"]["updated_colls"].each do |resource_id, resource_title| %>
-                  <li><%= resource_title %></li>
+                  <li><a href="/resources/<%= resource_id %>"><%= resource_title %></a></li>
                 <% end %>
               <% else %>
                 <li>No updates</li>
