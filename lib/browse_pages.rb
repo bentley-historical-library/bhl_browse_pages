@@ -75,7 +75,7 @@ class BrowsePages
       revision_count = json[:revision_statements].length
       new_or_updated = new_or_updated(last_revision, revision_count)
       creator = creator(json[:linked_agents])
-      classification = classification(json[:classifications])
+      classification = classification(json[:user_defined])
       sort = sort(creator, json[:title])
       page = page(sort)
       display = display(creator, json[:title])
@@ -184,11 +184,16 @@ class BrowsePages
     status
   end
 
-  def self.classification(classifications)
+  def self.classification(user_defined)
+    classifications = []
+    (1..3).to_a.each do |i|
+      if user_defined["enum_#{i}"]
+        classifications << user_defined["enum_#{i}"]
+      end
+    end
+
     if classifications.length
-      classification_refs = classifications.map { |c| c["ref"]}
-      classification_numbers = classification_refs.map { |c| c.split("/")[-1]}
-      if classification_numbers.include?("2") and classifications.length == 1
+      if classification.include?("UA") and classifications.length == 1
         classification = "UofM"
       else
         classification = "A-Z"
