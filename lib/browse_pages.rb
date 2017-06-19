@@ -70,12 +70,11 @@ class BrowsePages
     rows = Array.new
     coll_ids.each do |coll_id|
       json = Resource.to_jsonmodel(coll_id)
-
       last_revision = last_revision(json[:revision_statements])
       revision_count = json[:revision_statements].length
       new_or_updated = new_or_updated(last_revision, revision_count)
       creator = creator(json[:linked_agents])
-      classification = classification(json[:classifications])
+      classification = classification(json[:user_defined])
       sort = sort(creator, json[:title])
       page = page(sort)
       display = display(creator, json[:title])
@@ -184,11 +183,19 @@ class BrowsePages
     status
   end
 
-  def self.classification(classifications)
-    if classifications.length
-      classification_refs = classifications.map { |c| c["ref"]}
-      classification_numbers = classification_refs.map { |c| c.split("/")[-1]}
-      if classification_numbers.include?("2") and classifications.length == 1
+  def self.classification(user_defined)
+    classifications = Array.new
+
+    unless user_defined.nil?
+      [1, 2, 3].each do |i|
+        if user_defined.has_key?("enum_#{i}")
+          classifications << user_defined["enum_#{i}"]
+        end
+      end
+    end
+
+    if classifications.length > 0
+      if classifications.include?("UA") and classifications.length == 1
         classification = "UofM"
       else
         classification = "A-Z"
