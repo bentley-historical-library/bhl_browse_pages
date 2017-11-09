@@ -10,10 +10,9 @@ class BrowsePages
   end
 
   def self.locate_new_collections
-    update_job_enum = EnumerationValue.filter(:value => "update_browse_pages_job").get(:id)
-    update_jobs = Job.filter(:job_type_id => update_job_enum, :status => "completed")
+    update_jobs = Job.filter(:job_type => "update_browse_pages_job", :status => "completed")
     if update_jobs.count > 0
-      last_update = update_jobs.map(:create_time).max
+      last_update = update_jobs.max(:time_submitted)
     else
       last_update = Time.at(0)
     end

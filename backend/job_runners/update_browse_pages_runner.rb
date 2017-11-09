@@ -1,17 +1,9 @@
-class BrowsePagesJobRunner < JobRunner
+class UpdateBrowsePagesJobRunner < JobRunner
 
-  def self.instance_for(job)
-    if job.job_type == "update_browse_pages_job"
-      self.new(job)
-    else
-      nil
-    end
-  end
+  register_for_job_type('update_browse_pages_job')
 
   def run
-    super
     begin
-
       RequestContext.open(:repo_id => @job.repo_id) do
         @job.write_output("Updating finding aid browse pages")
         updates = BrowsePages.locate_new_collections
