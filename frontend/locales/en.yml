@@ -6,3 +6,5 @@ en:
         update: Update
       messages:
         updating_records: Update browse page info
+  job:
+    update_browse_pages_job: Update Browse Pages (do not use)
