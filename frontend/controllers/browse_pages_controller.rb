@@ -11,7 +11,7 @@ class BrowsePagesController < ApplicationController
     job_data['repo_id'] ||= session[:repo_id]
     job = Job.new("update_browse_pages_job", JSONModel(:update_browse_pages_job).from_hash(job_data), [])
     response = job.upload
-    resolver = Resolver.new(response[:uri])
+    resolver = Resolver.new(response['uri'])
     redirect_to resolver.view_uri
   end 
 
